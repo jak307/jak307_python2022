@@ -17,11 +17,13 @@ wordunique.sort()
 def signature(word):
     return ''.join(sorted(word))
 
+sortedWords = []
+
 #takes in a string and searches through the wordlist to find anagrams
 def anagram(myword):
     for word in wordunique:
         if(signature(word) == signature(myword)):
-            print(word)
+            sortedWords.append(word)
 
 #makes sure user input is neither blank nor null
 def validate_input(user_input):
@@ -43,16 +45,21 @@ if validate_input(user_input):
     while (counter > 2):
         print(counter, " letters:")
         theList = []
+        sortedWords = []
         #creates list of all possible combinations of a word's letters
         for i in combinations(sortedLetters, counter):
             s = ""
             s = s.join(i)
             theList.append(s)
-        #removes duplicates from list
+            #removes duplicates from list
         uniqueList = list(set(theList))
         #sorts the list in alphabetical order
         uniqueList.sort()
         #looks for anagrams in list
         for i in uniqueList:
             anagram(i)
+        #sorts list of anagrams in lexiographic order
+        sortedWords.sort()
+        #prints list of angrams
+        print(sortedWords)
         counter = counter - 1
