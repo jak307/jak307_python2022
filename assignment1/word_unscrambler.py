@@ -38,6 +38,7 @@ user_input = input("Please enter a word or a phrase: ")
 if validate_input(user_input):
     #sorts user input into lexiographic order
     sortedLetters = sorted(user_input)
+    print("(please give it a few minutes..)")
     #finds every unique combination of elements from a list
     from itertools import combinations
     #counts letters in word
