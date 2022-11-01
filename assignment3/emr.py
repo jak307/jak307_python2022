@@ -9,6 +9,8 @@
 import uuid
 import json
 import mysql.connector
+from flask import Flask
+app = Flask(__name__)
 
 class Doctor:
     def __init__(self, doctor_id="", doctor_fname = "", doctor_lname = ""):
@@ -419,9 +421,10 @@ class Diagnosis:
 
 
 class Visit:
-    def __init__(self, visit_id="", doctor_id = "", patient_id = ""):
+    def __init__(self, visit_id = "", date = "", doctor_id = "", patient_id = ""):
         self.__doctor_id = doctor_id
         self.__patient_id = patient_id
+        self.__date = date
         if visit_id == "":
             self.__visit_id = str(uuid.uuid4())
             try:
@@ -429,10 +432,10 @@ class Visit:
                                          database='jak307',
                                          user='jak307',
                                          password='InfSci1500_4131521')
-                query = """INSERT INTO viit (visit_id, doctor_id, patient_id)
-                           VALUES (%s, %s, %s) """
+                query = """INSERT INTO visit (visit_id, visit_date, fk_doctor_id, fk_patient_id)
+                           VALUES (%s, %s, %s, %s) """
 
-                values = [(self.__visit_id, self.__doctor_id, self.__patient_id)]
+                values = [(self.__visit_id, self.__date, self.__doctor_id, self.__patient_id)]
 
                 cursor = connection.cursor()
                 cursor.executemany(query, values)
@@ -457,6 +460,9 @@ class Visit:
 
     def get_patient_id(self):
         return self.__patient_id
+
+    def get_visit_date(self):
+        return self.__date
 
     def set_doctor_id(self, doctor_id):
         self.__doctor_id = doctor_id
@@ -494,6 +500,30 @@ class Visit:
             query = 'UPDATE visit SET fk_patient_id = %s WHERE visit_id = %s;'
 
             data_tuple = (self.__patient_id, self.__visit_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_date(self, date):
+        self.__date = date
+        try:
+            connection = mysql.connector.connect(host='67.205.163.33',
+                                         database='jak307',
+                                         user='jak307',
+                                         password='InfSci1500_4131521')
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE visit SET visit_date = %s WHERE visit_id = %s;'
+
+            data_tuple = (self.__date, self.__visit_id)
             cursor = connection.cursor()
             cursor.execute(query, data_tuple)
             connection.commit()
@@ -707,3 +737,22 @@ class Visit_Diagnosis:
         }
 
         return json.dumps(fields_data)
+
+@app.route('/')
+def index():
+    
+    d = Doctor("", "Natalie", "Walker")
+    p = Patient("", "John", "Mills")
+
+    doctor_id = d.get_doctor_id()
+    patient_id = p.get_patient_id()
+
+    v1 = Visit("", "2022-10-17", doctor_id, patient_id)
+    v2 = Visit("", "2022-10-31", doctor_id, patient_id)
+
+    v1json = v1.to_json()
+    v2json = v2.to_json()
+
+    visits_json = v1json() + v2json()
+
+    return visits_json
