@@ -750,9 +750,10 @@ def index():
     v1 = Visit("", "2022-10-17", doctor_id, patient_id)
     v2 = Visit("", "2022-10-31", doctor_id, patient_id)
 
-    v1json = v1.to_json()
-    v2json = v2.to_json()
+    v1j = v1.to_json() + "\n"
+    v2j = v2.to_json()
+    v3j = v1j + v2j
+    return v3j
 
-    visits_json = v1json() + v2json()
-
-    return visits_json
+if __name__ == '__main__':
+   app.run()
