@@ -677,7 +677,7 @@ class Composer:
             self.__composer_id = str(uuid.uuid4())
             try:
                 connection = mysql.connector.connect(**config)
-                query = """INSERT INTO composer (composer_id, composer_fname, composer_lname)
+                query = """INSERT INTO composers (composer_id, composer_fname, composer_lname)
                            VALUES (%s, %s, %s) """
 
                 values = [(self.__composer_id, self.__fname, self.__lname)]
@@ -712,7 +712,7 @@ class Composer:
             connection = mysql.connector.connect(**config)
 
             cursor = connection.cursor(prepared=True)
-            query = 'UPDATE composer SET composer_fname = %s WHERE composer_id = %s;'
+            query = 'UPDATE composers SET composer_fname = %s WHERE composer_id = %s;'
 
             data_tuple = (self.__fname, self.__composer_id)
             cursor = connection.cursor()
@@ -733,7 +733,7 @@ class Composer:
             connection = mysql.connector.connect(**config)
 
             cursor = connection.cursor(prepared=True)
-            query = 'UPDATE composer SET composer_lname = %s WHERE composer_id = %s;'
+            query = 'UPDATE composers SET composer_lname = %s WHERE composer_id = %s;'
 
             data_tuple = (self.__lname, self.__composer_id)
             cursor = connection.cursor()
@@ -752,7 +752,7 @@ class Composer:
         try:
             connection = mysql.connector.connect(**config)
             cursor = connection.cursor(prepared=True)
-            query = """Delete from composer where composer_id = %s"""
+            query = """Delete from composers where composer_id = %s"""
             cursor.execute(query, (self.__composer_id,))
             connection.commit()
         except mysql.connector.Error as error:
