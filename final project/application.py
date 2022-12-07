@@ -184,6 +184,25 @@ if username == "admin" and password == "password1":
                     if connection.is_connected():
                         cursor.close()
                         connection.close
+                check4 = input("Is there anyone else who wrote this film? (y/n )")
+            check4 = "y"
+            while (check4 == "y"):
+                w_id = input("What is the id of the person who produced this film? ")
+                try:
+                    connection = mysql.connector.connect(**config)
+                    cursor = connection.cursor()
+                    query = """INSERT INTO film_producer (fk_film_id, fk_producer_id)
+                               VALUES (%s, %s) """
+                    values = [(film_id, w_id)]
+                    cursor = connection.cursor()
+                    cursor.executemany(query, values)
+                    connection.commit()
+                except mysql.connector.Error as error:
+                    print("Failed to read from MySQL {}".format(error))
+                finally:
+                    if connection.is_connected():
+                        cursor.close()
+                        connection.close
                 check4 = input("Is there anyone else who produced this film? (y/n )")
             check4 = "y"
             while (check4 == "y"):
@@ -471,9 +490,9 @@ else:
         print("Here are your options: ")
         print("   1: search for films")
         print("   2: search for users")
-        print("What will it be? ")
         choice2 = input("What will it be?")
         if choice2 == "1":
-            print("films will be listed here when i get that done")
+            print("films will be listed here when i get that done. i need to populate the database first.")
 
         check5 = input("Would you like to keep going? (y/n) ")
+ 
