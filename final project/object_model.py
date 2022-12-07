@@ -889,7 +889,7 @@ class Film:
             self.__film_id = str(uuid.uuid4())
             try:
                 connection = mysql.connector.connect(**config)
-                query = """INSERT INTO films (film_id, film_name, film_year, film_language, film description)
+                query = """INSERT INTO films (film_id, film_name, film_year, film_language, film_description)
                            VALUES (%s, %s, %s, %s, %s) """
 
                 values = [(self.__film_id, self.__name, self.__year, self.__language, self.__description)]
