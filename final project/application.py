@@ -792,7 +792,7 @@ else:
                 count = 0
                 connection = mysql.connector.connect(**config)
                 cursor = connection.cursor()
-                query = "select * from films order by film_title;"
+                query = "select * from films order by film_name;"
                 cursor.execute(query)
                 result = cursor.fetchall()
                 for i in result:
