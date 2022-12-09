@@ -1190,4 +1190,528 @@ class Genre:
         }
 
         return json.dumps(fields_data)
-      
+
+
+
+
+class Review:
+    def __init__(self, review_id="", rating = "", review_body = "", user_id = "", film_id = ""):
+        self.__rating = rating
+        self.__body = review_body
+        self.__user_id = user_id
+        self.__film_id = film_id
+        if review_id == "":
+            self.__review_id = str(uuid.uuid4())
+            try:
+                connection = mysql.connector.connect(**config)
+                query = """INSERT INTO reviews (review_id, rating, review, fk_user_id, fk_film_id)
+                           VALUES (%s, %s, %s, %s, %s) """
+
+                values = [(self.__review_id, self.__rating, self.__body, self.__user_id, self.__film_id)]
+
+                cursor = connection.cursor()
+                cursor.executemany(query, values)
+                connection.commit()
+
+            except mysql.connector.Error as error:
+                print("Failed to insert record into MySQL table {}".format(error))
+
+            finally:
+                if connection.is_connected():
+                    cursor.close()
+                    connection.close()
+
+        else:
+            self.__review_id = review_id
+
+    def get_rating(self):
+        return self.__rating
+
+    def get_body(self):
+        return self.__body
+
+    def get_user_id(self):
+        return self.__user_id
+
+    def get_film_id(self):
+        return self.__film_id
+
+    def get_review_id(self):
+        return self.__review_id
+
+    def set_rating(self, rating):
+        self.__rating = rating
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE reviews SET rating = %s WHERE review_id = %s;'
+
+            data_tuple = (self.__rating, self.__review_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_body(self, review_body):
+        self.__body = review_body
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE reviews SET review_body = %s WHERE review_id = %s;'
+
+            data_tuple = (self.__body, self.__review_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_user_id(self, user_id):
+        self.__user_id = user_id
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE reviews SET fk_user_id = %s WHERE review_id = %s;'
+
+            data_tuple = (self.__user_id, self.__review_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_film_id(self, film_id):
+        self.__film_id = film_id
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE reviews SET fk_film_id = %s WHERE review_id = %s;'
+
+            data_tuple = (self.__film_id, self.__film_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def delete(self):
+        try:
+            connection = mysql.connector.connect(**config)
+            cursor = connection.cursor(prepared=True)
+            query = """Delete from reviews where review_id = %s"""
+            cursor.execute(query, (self.__users_id,))
+            connection.commit()
+        except mysql.connector.Error as error:
+            print("parameterized query failed {}".format(error))
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def to_json(self):
+        fields_data = {
+            "review id" : self.__review_id,
+            "rating" : self.__rating,
+            "review body" : self.__body,
+            "user id" : self.__user_id,
+            "film id" : self.__film_id,
+        }
+
+        return json.dumps(fields_data)
+
+
+
+
+
+class Review_Reply:
+    def __init__(self, reply_id="", reply = "", user_id = "", review_id = ""):
+        self.__reply = reply
+        self.__user_id = user_id
+        self.__review_id = review_id
+        if reply_id == "":
+            self.__reply_id = str(uuid.uuid4())
+            try:
+                connection = mysql.connector.connect(**config)
+                query = """INSERT INTO review_replies (reply_id, reply_text, fk_user_id, fk_review_id
+                           VALUES (%s, %s, %s, %s) """
+
+                values = [(self.__reply_id, self.__reply, self.__user_id, self.__review_id)]
+
+                cursor = connection.cursor()
+                cursor.executemany(query, values)
+                connection.commit()
+
+            except mysql.connector.Error as error:
+                print("Failed to insert record into MySQL table {}".format(error))
+
+            finally:
+                if connection.is_connected():
+                    cursor.close()
+                    connection.close()
+
+        else:
+            self.__reply_id = reply_id
+
+    def get_reply(self):
+        return self.__reply
+
+    def get_user_id(self):
+        return self.__user_id
+
+    def get_review_id(self):
+        return self.__review_id
+    
+    def get_reply_id(self):
+        return self.__review_id
+
+    def set_reply(self, reply):
+        self.__reply = reply
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE review_replies SET reply = %s WHERE reply_id = %s;'
+
+            data_tuple = (self.__reply, self.__reply_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_user_id(self, user_id):
+        self.__user_id = user_id
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE review_replies SET fk_user_id = %s WHERE reply_id = %s;'
+
+            data_tuple = (self.__user_id, self.__reply_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_review_id(self, review_id):
+        self.__review_id = review_id
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE review_replies SET fk_review_id = %s WHERE reply_id = %s;'
+
+            data_tuple = (self.__review_id, self.__reply_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def delete(self):
+        try:
+            connection = mysql.connector.connect(**config)
+            cursor = connection.cursor(prepared=True)
+            query = """Delete from review_replies where reply_id = %s"""
+            cursor.execute(query, (self.__users_id,))
+            connection.commit()
+        except mysql.connector.Error as error:
+            print("parameterized query failed {}".format(error))
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def to_json(self):
+        fields_data = {
+            "reply id" : self.__reply_id,
+            "reply" : self.__reply,
+            "user id" : self.__user_id,
+            "review id" : self.__review_id,
+        }
+
+        return json.dumps(fields_data)
+
+
+
+
+class List:
+    def __init__(self, list_id="", list_title = "", fk_user_id = ""):
+        self.__title = list_title
+        self.__user_id = fk_user_id
+        if list_id == "":
+            self.__list_id = str(uuid.uuid4())
+            try:
+                connection = mysql.connector.connect(**config)
+                query = """INSERT INTO lists (list_id, list_title, fk_user_id)
+                           VALUES (%s, %s, %s) """
+
+                values = [(self.__list_id, self.__title, self.__user_id)]
+
+                cursor = connection.cursor()
+                cursor.executemany(query, values)
+                connection.commit()
+
+            except mysql.connector.Error as error:
+                print("Failed to insert record into MySQL table {}".format(error))
+
+            finally:
+                if connection.is_connected():
+                    cursor.close()
+                    connection.close()
+
+        else:
+            self.__list_id = list_id
+
+    def get_title(self):
+        return self.__title
+
+    def get_user_id(self):
+        return self.__user_id
+
+    def get_list_id(self):
+        return self.__list_id
+
+    def set_title(self, list_title):
+        self.__title = list_title
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE lists SET list_title = %s WHERE list_id = %s;'
+
+            data_tuple = (self.__title, self.__list_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_user_id(self, fk_user_id):
+        self.__user_id = fk_user_id
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE lists SET fk_user_id = %s WHERE list_id = %s;'
+
+            data_tuple = (self.__user_id, self.__list_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def delete(self):
+        try:
+            connection = mysql.connector.connect(**config)
+            cursor = connection.cursor(prepared=True)
+            query = """Delete from lists where list_id = %s"""
+            cursor.execute(query, (self.__list_id,))
+            connection.commit()
+        except mysql.connector.Error as error:
+            print("parameterized query failed {}".format(error))
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def to_json(self):
+        fields_data = {
+            "id" : self.__list_id,
+            "list title" : self.__title,
+            "user_id" : self.__user_id,
+        }
+
+        return json.dumps(fields_data)
+
+
+
+
+class List_Reply:
+    def __init__(self, reply_id="", reply = "", user_id = "", list_id = ""):
+        self.__reply = reply
+        self.__user_id = user_id
+        self.__list_id = list_id
+        if reply_id == "":
+            self.__reply_id = str(uuid.uuid4())
+            try:
+                connection = mysql.connector.connect(**config)
+                query = """INSERT INTO list_replies (reply_id, reply_text, fk_user_id, fk_list_id
+                           VALUES (%s, %s, %s, %s) """
+
+                values = [(self.__reply_id, self.__reply, self.__user_id, self.__list_id)]
+
+                cursor = connection.cursor()
+                cursor.executemany(query, values)
+                connection.commit()
+
+            except mysql.connector.Error as error:
+                print("Failed to insert record into MySQL table {}".format(error))
+
+            finally:
+                if connection.is_connected():
+                    cursor.close()
+                    connection.close()
+
+        else:
+            self.__reply_id = reply_id
+
+    def get_reply(self):
+        return self.__reply
+
+    def get_user_id(self):
+        return self.__user_id
+
+    def get_list_id(self):
+        return self.__list_id
+    
+    def get_reply_id(self):
+        return self.__list_id
+
+    def set_reply(self, reply):
+        self.__reply = reply
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE list_replies SET reply = %s WHERE reply_id = %s;'
+
+            data_tuple = (self.__reply, self.__reply_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_user_id(self, user_id):
+        self.__user_id = user_id
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE list_replies SET fk_user_id = %s WHERE reply_id = %s;'
+
+            data_tuple = (self.__user_id, self.__reply_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def set_list_id(self, list_id):
+        self.__list_id = list_id
+        try:
+            connection = mysql.connector.connect(**config)
+
+            cursor = connection.cursor(prepared=True)
+            query = 'UPDATE list_replies SET fk_list_id = %s WHERE reply_id = %s;'
+
+            data_tuple = (self.__list_id, self.__reply_id)
+            cursor = connection.cursor()
+            cursor.execute(query, data_tuple)
+            connection.commit()
+
+        except mysql.connector.Error as error:
+            print("Failed to insert record into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def delete(self):
+        try:
+            connection = mysql.connector.connect(**config)
+            cursor = connection.cursor(prepared=True)
+            query = """Delete from list_replies where reply_id = %s"""
+            cursor.execute(query, (self.__users_id,))
+            connection.commit()
+        except mysql.connector.Error as error:
+            print("parameterized query failed {}".format(error))
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def to_json(self):
+        fields_data = {
+            "reply id" : self.__reply_id,
+            "reply" : self.__reply,
+            "user id" : self.__user_id,
+            "list id" : self.__list_id,
+        }
+
+        return json.dumps(fields_data)

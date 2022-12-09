@@ -10,6 +10,10 @@ from object_model import Producer
 from object_model import Cinematographer
 from object_model import Composer
 from object_model import Editor
+from object_model import Review
+from object_model import Review_Reply
+from object_model import List
+from object_model import List_Reply
 
 config = {
     'host': '67.205.163.33',
@@ -17,13 +21,6 @@ config = {
     'password': 'InfSci1500_4131521',
     'database': 'jak307'
 }
-
-print("Welcome!")
-print("You have two options")
-print("Would you like to:")
-print(" 1: sign in")
-print(" 2: register")
-surq = input("Which will it be? (please enter 1 or 2) ")
 
 def check_reg(uname, pword, eml):
     try:
@@ -57,7 +54,7 @@ def validate_user(uname, pword):
         for i in result:
             if (i[1] == uname and i[2] == pword):
                 check1 = 1
-                break
+                return i[0]
         if check1 == 0:
             print("Sorry, we can't find that username/password combo")
             quit()
@@ -69,18 +66,314 @@ def validate_user(uname, pword):
             cursor.close()
             connection.close
 
+def display_film(f_id):
+    f_id = f_id
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select * from films where film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        for tuple1 in result:
+            print("\n")
+            print("Name: " + tuple1[1])
+            print("Year: " + tuple1[2])
+            print("Language: " + tuple1[3])
+            print("Plot: " + tuple1[4])
+
+        cursor = connection.cursor()
+        query = "select fk_genre_id from film_genre where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            g_id = tuple1[0]
+            query = "select * from genres where genre_id = '" + g_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Genre: " + tuple2[1])
+                    counter1 = counter1 + 1
+                else:
+                    print("       " + tuple2[1])
+
+        cursor = connection.cursor()
+        query = "select fk_director_id from film_director where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            d_id = tuple1[0]
+            query = "select * from directors where director_id = '" + d_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Directed by: " + tuple2[1] + " " + tuple2[2])
+                    counter1 = counter1 + 1
+                else:
+                    print("             " + tuple2[1] + " " + tuple2[2])
+        
+        cursor = connection.cursor()
+        query = "select fk_actor_id from film_actor where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            a_id = tuple1[0]
+            query = "select * from actors where actor_id = '" + a_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Starring: " + tuple2[1] + " " + tuple2[2])
+                    counter1 = counter1 + 1
+                else:
+                    print("          " + tuple2[1] + " " + tuple2[2])
+
+        cursor = connection.cursor()
+        query = "select fk_writer_id from film_writer where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            w_id = tuple1[0]
+            query = "select * from writers where writer_id = '" + w_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Written by: " + tuple2[1] + " " + tuple2[2])
+                    counter1 = counter1 + 1
+                else:
+                    print("            " + tuple2[1] + " " + tuple2[2])
+
+        cursor = connection.cursor()
+        query = "select fk_producer_id from film_producer where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            p_id = tuple1[0]
+            query = "select * from producers where producer_id = '" + p_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Produced by: " + tuple2[1] + " " + tuple2[2])
+                    counter1 = counter1 + 1
+                else:
+                    print("             " + tuple2[1] + " " + tuple2[2])
+
+        cursor = connection.cursor()
+        query = "select fk_cinematographer_id from film_cinematographer where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            ci_id = tuple1[0]
+            query = "select * from cinematographers where cinematographer_id = '" + ci_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Cinematography by: " + tuple2[1] + " " + tuple2[2])
+                    counter1 = counter1 + 1
+                else:
+                    print("                   " + tuple2[1] + " " + tuple2[2])
+
+        cursor = connection.cursor()
+        query = "select fk_composer_id from film_composer where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            co_id = tuple1[0]
+            query = "select * from composers where composer_id = '" + co_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Score by: " + tuple2[1] + " " + tuple2[2])
+                    counter1 = counter1 + 1
+                else:
+                    print("          " + tuple2[1] + " " + tuple2[2])
+
+        cursor = connection.cursor()
+        query = "select fk_editor_id from film_editor where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            e_id = tuple1[0]
+            query = "select * from editors where editor_id = '" + e_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Edited by: " + tuple2[1] + " " + tuple2[2])
+                    counter1 = counter1 + 1
+                else:
+                    print("           " + tuple2[1] + " " + tuple2[2])
+
+        cursor = connection.cursor()
+        query = "select fk_studio_id from film_studio where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter1 = 0
+        for tuple1 in result:
+            s_id = tuple1[0]
+            query = "select * from studios where studio_id = '" + s_id + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for tuple2 in result:
+                if counter1 == 0:
+                    print("Studio: " + tuple2[1] + " ")
+                    counter1 = counter1 + 1
+                else:
+                    print("        " + tuple2[1] + " ")
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+
+def display_reviews(f_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select reviews.review_id, reviews.rating, reviews.review, users.username from reviews inner join users on reviews.fk_user_id=users.user_id where fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        result1 = cursor.fetchall()
+        for tuple1 in result1:
+            print(tuple1[3] + ": "+ tuple1[1] + "/10")
+            print("     " + tuple1[2])
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def display_lists(u_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select * from lists where fk_user_id = '" + u_id + "' order by list_title;"
+        cursor.execute(query)
+        result1 = cursor.fetchall()
+        counter = 1
+        result2 = []
+        for tuple1 in result1:
+            counter1 = str(counter)
+            print(counter1 + ": " + tuple1[1])
+            result2.append((counter1, tuple1[0]))
+            counter = counter + 1
+        return result2
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def display_list(l_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select * from list_films where fk_list_id = '" + l_id + "' order by list_rank;"
+        cursor.execute(query)
+        results = cursor.fetchall()
+        counter = 1
+        for x in results:
+            counter1 = str(counter)
+            cursor = connection.cursor()
+            query = "select * from films where film_id = '" + x[1] + "';"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for film in result:
+                print(counter1 + ": " + film[1])
+            counter = counter + 1
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+def append_list(l_id, f_id):
+    try:
+        rank = input("Which place do you want to add the film? ")
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select * from list_films where fk_list_id = '" + l_id + "' order by list_rank;"
+        cursor.execute(query)
+        results = cursor.fetchall()
+        new_rank = 0
+        for x in results:
+            if x[2] == rank:
+                new_rank = x[2]
+                cursor = connection.cursor(prepared=True)
+                query = 'UPDATE list_films SET list_rank = %s WHERE fk_list_id = %s;'
+                data_tuple = (new_rank, l_id)
+                cursor = connection.cursor()
+                cursor.execute(query, data_tuple)
+                connection.commit()
+                new_rank = new_rank + 1
+            if new_rank > 0:
+                cursor = connection.cursor(prepared=True)
+                query = 'UPDATE list_films SET list_rank = %s WHERE fk_list_id = %s;'
+                data_tuple = (new_rank, l_id)
+                cursor = connection.cursor()
+                cursor.execute(query, data_tuple)
+                connection.commit()
+                new_rank = new_rank + 1
+        cursor = connection.cursor()
+        query = """INSERT INTO list_films (fk_list_id, fk_film_id, list_rank) VALUES (%s, %s, %s) """
+        values = [(l_id, f_id, rank)]
+        cursor.executemany(query, values)
+        connection.commit()
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+print("Welcome!")
+print("You have two options")
+print("Would you like to:")
+print(" 1: sign in")
+print(" 2: register")
+surq = input("Which will it be? (please enter 1 or 2) ")
+
 if surq == "2":
     username = input("username: ")
     password = input("password: ")
     email = input("email: ")
     check_reg(username, password, email)
     user1 = User("", username, password, email)
+    user_id = user1.get_user_id()
     print("You have successfully registered!")
 
 if surq == "1":
     username = input("username: ")
     password = input("password: ")
-    validate_user(username, password)
+    user_id = validate_user(username, password)
     wlcm = "Hello, " + username + "!"
     print(wlcm)
     
@@ -490,9 +783,65 @@ else:
         print("Here are your options: ")
         print("   1: search for films")
         print("   2: search for users")
-        choice2 = input("What will it be?")
+        print("   3: create a list")
+        print("   4: view your profile")
+        choice2 = input("What will it be? ")
         if choice2 == "1":
-            print("films will be listed here when i get that done. i need to populate the database first.")
-
-        check5 = input("Would you like to keep going? (y/n) ")
- 
+            films = []
+            try:
+                count = 0
+                connection = mysql.connector.connect(**config)
+                cursor = connection.cursor()
+                query = "select * from films order by film_title;"
+                cursor.execute(query)
+                result = cursor.fetchall()
+                for i in result:
+                    count = count + 1
+                    films.append((count, i[0], i[1]))
+            except mysql.connector.Error as error:
+                print("Failed to read from MySQL {}".format(error))
+            finally:
+                if connection.is_connected():
+                    cursor.close()
+                    connection.close
+            for i in films:
+                num1 = str(i[0])
+                num2 = str(i[2])
+                string = num1 + ": " + num2
+                print(string)
+            choice3 = input("Which film page would you like to visit? (please enter the number) ")
+            choice3 = int(choice3)
+            for i in films:
+                if i[0] == choice3:
+                    film_id = i[1]
+                    display_film(film_id)
+                    break
+            print("You have four options")
+            print("   1: rate and review")
+            print("   2: read reviews")
+            print("   3: add to a list")
+            print("   4: go back")
+            choice4 = input("What would you like to do? ")
+            if choice4 == "1":
+                rating = input("On a scale from 1-10, how would you rate this film? ")
+                rating = int(rating)
+                body = input("What did you think? ")
+                review1 = Review("", rating, body, user_id, film_id)
+                print("review submitted")
+            if choice4 == "2":
+                display_reviews(film_id)
+            if choice4 == "3":
+                tuple_list = display_lists(user_id)
+                choice5 = input("Which list would you like to add this film to? ")
+                for i in tuple_list:
+                    if choice5 == i[0]:
+                        display_list(i[1])
+                        append_list(i[1], film_id)
+        if choice2 == "2":
+            pass
+        if choice2 == "3":
+            title = input("What is the name of your list?")
+            list1 = List("", title, user_id)
+        if choice2 == "4":
+            pass
+        check5 = input("Would you like to go back home? (y/n) ")
