@@ -325,7 +325,7 @@ def append_list(l_id, f_id):
         new_rank = 0
         for x in results:
             if x[2] == rank:
-                new_rank = x[2]
+                new_rank = x[2] + 1
                 cursor = connection.cursor(prepared=True)
                 query = 'UPDATE list_films SET list_rank = %s WHERE fk_list_id = %s;'
                 data_tuple = (new_rank, l_id)
