@@ -120,7 +120,7 @@ class User:
             connection = mysql.connector.connect(**config)
             cursor = connection.cursor(prepared=True)
             query = """Delete from users where user_id = %s"""
-            cursor.execute(query, (self.__users_id,))
+            cursor.execute(query, (self.__user_id,))
             connection.commit()
         except mysql.connector.Error as error:
             print("parameterized query failed {}".format(error))
@@ -1012,8 +1012,8 @@ class Film:
         try:
             connection = mysql.connector.connect(**config)
             cursor = connection.cursor(prepared=True)
-            query = """Delete from users where user_id = %s"""
-            cursor.execute(query, (self.__users_id,))
+            query = """Delete from filmss where film_id = %s"""
+            cursor.execute(query, (self.__film_id,))
             connection.commit()
         except mysql.connector.Error as error:
             print("parameterized query failed {}".format(error))
@@ -1328,7 +1328,7 @@ class Review:
             connection = mysql.connector.connect(**config)
             cursor = connection.cursor(prepared=True)
             query = """Delete from reviews where review_id = %s"""
-            cursor.execute(query, (self.__users_id,))
+            cursor.execute(query, (self.__review_id,))
             connection.commit()
         except mysql.connector.Error as error:
             print("parameterized query failed {}".format(error))
@@ -1391,7 +1391,7 @@ class Review_Reply:
         return self.__review_id
     
     def get_reply_id(self):
-        return self.__review_id
+        return self.__reply_id
 
     def set_reply(self, reply):
         self.__reply = reply
@@ -1399,7 +1399,7 @@ class Review_Reply:
             connection = mysql.connector.connect(**config)
 
             cursor = connection.cursor(prepared=True)
-            query = 'UPDATE review_replies SET reply = %s WHERE reply_id = %s;'
+            query = 'UPDATE review_replies SET reply_text = %s WHERE reply_id = %s;'
 
             data_tuple = (self.__reply, self.__reply_id)
             cursor = connection.cursor()
@@ -1461,7 +1461,7 @@ class Review_Reply:
             connection = mysql.connector.connect(**config)
             cursor = connection.cursor(prepared=True)
             query = """Delete from review_replies where reply_id = %s"""
-            cursor.execute(query, (self.__users_id,))
+            cursor.execute(query, (self.__reply_id,))
             connection.commit()
         except mysql.connector.Error as error:
             print("parameterized query failed {}".format(error))
@@ -1635,7 +1635,7 @@ class List_Reply:
             connection = mysql.connector.connect(**config)
 
             cursor = connection.cursor(prepared=True)
-            query = 'UPDATE list_replies SET reply = %s WHERE reply_id = %s;'
+            query = 'UPDATE list_replies SET reply_text = %s WHERE reply_id = %s;'
 
             data_tuple = (self.__reply, self.__reply_id)
             cursor = connection.cursor()
@@ -1697,7 +1697,7 @@ class List_Reply:
             connection = mysql.connector.connect(**config)
             cursor = connection.cursor(prepared=True)
             query = """Delete from list_replies where reply_id = %s"""
-            cursor.execute(query, (self.__users_id,))
+            cursor.execute(query, (self.__reply_id,))
             connection.commit()
         except mysql.connector.Error as error:
             print("parameterized query failed {}".format(error))

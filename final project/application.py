@@ -1269,9 +1269,43 @@ else:
             if choice5 == "2":
                 pass
             if choice5 == "3":
-                pass
+                choice6 = input("Which review reply would you like to edit/delete? ")
+                for reply in r_replies:
+                    if reply[0] == choice6:
+                        reply1 = Review_Reply(reply[1], reply[3], user_id, reply[4])
+                        print("You said: " + reply[3])
+                        print("You have 3 options: ")
+                        print("   1: Change the reply")
+                        print("   2: Delete the reply")
+                        print("   3: Go back")
+                        choice7 = input("What will it be? ")
+                        if choice7 == "1":
+                            new_reply = input("What do you want to say this time? ")
+                            reply1.set_reply(new_reply)
+                        if choice7 == "2":
+                            reply1.delete()
+                            print("The reply has been deleted")
+                        if choice7 == "3":
+                            pass
             if choice5 == "4":
-                pass
+                choice6 = input("Which list reply would you like to edit/delete? ")
+                for reply in l_replies:
+                    if reply[0] == choice6:
+                        reply1 = List_Reply(reply[1], reply[4], user_id, reply[2])
+                        print("You said: " + reply[4])
+                        print("You have 3 options: ")
+                        print("   1: Change the reply")
+                        print("   2: Delete the reply")
+                        print("   3: Go back")
+                        choice7 = input("What will it be? ")
+                        if choice7 == "1":
+                            new_reply = input("What do you want to say this time? ")
+                            reply1.set_reply(new_reply)
+                        if choice7 == "2":
+                            reply1.delete()
+                            print("The reply has been deleted")
+                        if choice7 == "3":
+                            pass
             if choice5 == "5":
                 pass
             if choice5 == "6":
