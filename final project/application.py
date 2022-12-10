@@ -66,6 +66,32 @@ def validate_user(uname, pword):
             cursor.close()
             connection.close
 
+
+
+def display_films():
+    films = []
+    try:
+        count = 0
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select * from films order by film_name;"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        for i in result:
+            count = count + 1
+            count1 = str(count)
+            print(count1 + ": " + i[1])
+            films.append((count, i[0], i[1]))
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+    return films
+
+
+
 def display_film(f_id):
     f_id = f_id
     try:
@@ -251,9 +277,132 @@ def display_reviews(f_id):
         query = "select reviews.review_id, reviews.rating, reviews.review, users.username from reviews inner join users on reviews.fk_user_id=users.user_id where fk_film_id = '" + f_id + "';"
         cursor.execute(query)
         result1 = cursor.fetchall()
+        counter = 1
+        reviews = []
         for tuple1 in result1:
+            counter1 = str(counter)
+            print(counter1 + ":  " + tuple1[3] + "- "+ tuple1[1] + "/10")
+            print("     " + tuple1[2])
+            reviews.append((counter1, tuple1[0]))
+            counter = counter + 1
+        return reviews
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def get_user_reviews(u_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select reviews.review_id, reviews.rating, reviews.review, films.film_name, films.film_id from reviews inner join films on reviews.fk_film_id=films.film_id where fk_user_id = '" + u_id + "';"
+        cursor.execute(query)
+        result1 = cursor.fetchall()
+        result2 = []
+        counter = 1
+        for tuple1 in result1:
+            counter1 = str(counter)
+            print(counter1 + ": " + tuple1[3])
+            result2.append((counter1, tuple1[0], tuple1[1], tuple1[2], tuple1[3], tuple1[4]))
+            counter = counter + 1
+        return result2
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def display_review(r_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select reviews.review_id, reviews.rating, reviews.review, films.film_name from reviews inner join films on reviews.fk_film_id=films.film_id where review_id = '" + r_id + "';"
+        cursor.execute(query)
+        result1 = cursor.fetchall()
+        result2 = []
+        counter = 1
+        for tuple1 in result1:
+            counter1 = str(counter)
             print(tuple1[3] + ": "+ tuple1[1] + "/10")
             print("     " + tuple1[2])
+            counter = counter + 1
+        return result2
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def reply_to_review(u_id, r_id):
+    reply1 = input("What is your reply? ")
+    reply2 = Review_Reply("", reply1, u_id, r_id)
+    print("reply submitted")
+
+
+
+def read_review_replies(r_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select users.username, review_replies.reply_text from users inner join review_replies on review_replies.fk_user_id=users.user_id where fk_review_id = '" + r_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        for x in result:
+            print(x[0] + " said: ")
+            print("     " + x[1])
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def user_review_replies(u_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select review_replies.reply_id, reviews.review, review_replies.reply_text, reviews.fk_film_id, reviews.fk_user_id from reviews inner join review_replies on review_replies.fk_review_id=reviews.review_id where review_replies.fk_user_id = '" + u_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        replies = []
+        counter = 1
+        for x in result:
+            counter1 = str(counter)
+            replies.append((counter1, x[0], x[1], x[2], x[3], x[4]))
+            counter = counter + 1
+        for x in replies:
+            query = "select * from users where user_id = '" + x[5] + "';"
+            cursor = connection.cursor()
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for i in result:
+                uname = i[1]
+            query = "select * from films where film_id = '" + x[4] + "';"
+            cursor = connection.cursor()
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for i in result:
+                fname = i[1]
+            print(x[0] + ":  " + uname + "'s review of " + fname + ": ")
+            print("     " +  x[2])
+            print("         Your reply:")
+            print("             " + x[3])
+        return replies
 
     except mysql.connector.Error as error:
         print("Failed to read from MySQL {}".format(error))
@@ -276,7 +425,7 @@ def display_lists(u_id):
         for tuple1 in result1:
             counter1 = str(counter)
             print(counter1 + ": " + tuple1[1])
-            result2.append((counter1, tuple1[0]))
+            result2.append((counter1, tuple1[0], tuple1[1]))
             counter = counter + 1
         return result2
 
@@ -286,6 +435,7 @@ def display_lists(u_id):
         if connection.is_connected():
             cursor.close()
             connection.close
+
 
 
 
@@ -313,6 +463,9 @@ def display_list(l_id):
         if connection.is_connected():
             cursor.close()
             connection.close
+
+
+
 
 def append_list(l_id, f_id):
     try:
@@ -346,12 +499,209 @@ def append_list(l_id, f_id):
         values = [(l_id, f_id, rank)]
         cursor.executemany(query, values)
         connection.commit()
+        print("\nnew list:")
+        display_list(l_id)
     except mysql.connector.Error as error:
         print("Failed to read from MySQL {}".format(error))
     finally:
         if connection.is_connected():
             cursor.close()
             connection.close
+
+
+
+def reply_to_list(u_id, l_id):
+    reply1 = input("What is your reply? ")
+    reply2 = List_Reply("", reply1, u_id, l_id)
+    print("reply submitted")
+
+
+
+def read_list_replies(l_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select users.username, list_replies.reply_text from users inner join list_replies on list_replies.fk_user_id=users.user_id where fk_list_id = '" + l_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        for x in result:
+            print(x[0] + " said: ")
+            print("     " + x[1])
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def user_list_replies(u_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select list_replies.reply_id, lists.list_id, lists.list_title, list_replies.reply_text, lists.fk_user_id from lists inner join list_replies on list_replies.fk_list_id=lists.list_id where list_replies.fk_user_id = '" + u_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        counter = 1
+        replies = []
+        for x in result:
+            counter1 = str(counter)
+            replies.append((counter1, x[0], x[1], x[2], x[3], x[4]))
+            counter = counter + 1
+        for x in replies:
+            query = "select * from users where user_id = '" + x[5] + "';"
+            cursor = connection.cursor()
+            cursor.execute(query)
+            result = cursor.fetchall()
+            for i in result:
+                print(x[0] + ":  " + x[3] + " by " + i[1])
+                query = "select list_films.list_rank, films.film_name from list_films inner join films on list_films.fk_film_id=films.film_id where list_films.fk_list_id = '" + x[2] + "' order by list_films.list_rank;"
+                cursor = connection.cursor()
+                cursor.execute(query)
+                result2 = cursor.fetchall()
+                for j in result2:
+                    rank = str(j[0])
+                    print("     " + rank + ": " + j[1])
+            print("  You said:  " + x[4])
+        return replies        
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def display_users(u_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select * from users order by username;"
+        cursor.execute(query)
+        result1 = cursor.fetchall()
+        counter = 1
+        result2 = []
+        for tuple1 in result1:
+            counter1 = str(counter)
+            if tuple1[0] == u_id or tuple1[0] == "93e46d0e-cc76-4d6e-9d16-e171994324bd":
+                pass
+            else:
+                print(counter1 + ": " + tuple1[1])
+                result2.append((counter1, tuple1[0]))
+                counter = counter + 1
+        return result2
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def get_username(u_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select * from users where user_id = '" + u_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        for tuple1 in result:
+            u_name = tuple1[1]
+        return (u_id, u_name)
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def follow_user(u_id, f_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = """INSERT INTO user_followers (fk_user_id, fk_follower_id)
+                           VALUES (%s, %s) """
+        values = [(u_id, f_id)]
+        cursor = connection.cursor()
+        cursor.executemany(query, values)
+        connection.commit()
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def unfollow_user(u_id, f_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "delete from user_followers where fk_user_id = '" + u_id + "' and fk_follower_id = '" + f_id + "';"
+        cursor.execute(query)
+        connection.commit()
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def see_followers(u_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select users.username from users inner join user_followers on users.user_id=user_followers.fk_follower_id where user_followers.fk_user_id = '" + u_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        for x in result:
+            print(x[0])
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def see_following(f_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select users.username, user_followers.fk_follower_id from users inner join user_followers on users.user_id=user_followers.fk_user_id where user_followers.fk_follower_id = '" + f_id + "';"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        following = []
+        counter = 1
+        for x in result:
+            counter1 = str(counter)
+            print(counter1 + ": " + x[0])
+            following.append((counter1, x[1]))
+            counter = counter + 1
+        return following
+
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
 
 
 print("Welcome!")
@@ -787,28 +1137,7 @@ else:
         print("   4: view your profile")
         choice2 = input("What will it be? ")
         if choice2 == "1":
-            films = []
-            try:
-                count = 0
-                connection = mysql.connector.connect(**config)
-                cursor = connection.cursor()
-                query = "select * from films order by film_name;"
-                cursor.execute(query)
-                result = cursor.fetchall()
-                for i in result:
-                    count = count + 1
-                    films.append((count, i[0], i[1]))
-            except mysql.connector.Error as error:
-                print("Failed to read from MySQL {}".format(error))
-            finally:
-                if connection.is_connected():
-                    cursor.close()
-                    connection.close
-            for i in films:
-                num1 = str(i[0])
-                num2 = str(i[2])
-                string = num1 + ": " + num2
-                print(string)
+            films = display_films()
             choice3 = input("Which film page would you like to visit? (please enter the number) ")
             choice3 = int(choice3)
             for i in films:
@@ -829,7 +1158,17 @@ else:
                 review1 = Review("", rating, body, user_id, film_id)
                 print("review submitted")
             if choice4 == "2":
-                display_reviews(film_id)
+                reviews = display_reviews(film_id)
+                choice5 = input("Would you like to see the replies to any reviews? (y/n) ")
+                if choice5 == "y":
+                    choice6 = input("Which review would you like to read replies for? ")
+                    for x in reviews:
+                        if x[0] == choice6:
+                            read_review_replies(x[1])
+                            break
+                    choice6 = input("Would you like to reply to this review? (y/n) ")
+                    if choice6 == "y":
+                        reply_to_review(user_id, x[1])
             if choice4 == "3":
                 tuple_list = display_lists(user_id)
                 choice5 = input("Which list would you like to add this film to? ")
@@ -838,10 +1177,103 @@ else:
                         display_list(i[1])
                         append_list(i[1], film_id)
         if choice2 == "2":
-            pass
+            results = display_users(user_id)
+            choice5 = input("Which user would you like to select? ")
+            for j in results:
+                if choice5 == j[0]:
+                    chosen_user_id = j[1]
+            chosen_user = get_username(chosen_user_id)
+            print(chosen_user[1] + "'s lists: ")
+            user_lists = display_lists(chosen_user[0])
+            print("films that " + chosen_user[1] + " has reviewed: ")
+            user_reviews = get_user_reviews(chosen_user[0])
+            print("You have three options")
+            print("   1: See a list")
+            print("   2: Read a review")
+            print("   3: Follow user")
+            choice5 = input("Which will it be? ")
+            if choice5 == "1":
+                choice6 = input("which list would you like to see? ")
+                for x in user_lists:
+                    if x[0] == choice6:
+                        print(x[2] + ": ")
+                        display_list(x[1])
+                        print("     Replies to " + x[2] + ": ")
+                        read_list_replies(x[1])
+                        break
+                choice6 = input("Would you like to reply to this list? (y/n) ")
+                if choice6 == "y":
+                    reply_to_list(user_id, x[1])
+            if choice5 == "2":
+                choice6 = input("which review would you like to read? ")
+                for x in user_reviews:
+                    if x[0] == choice6:
+                        display_review(x[1])
+                        print("     Replies: ")
+                        read_review_replies(x[1])
+                        break
+                choice6 = input("Would you like to reply to this review? (y/n) ")
+                if choice6 == "y":
+                    reply_to_review(user_id, x[1])
+            if choice5 == "3":
+                follow_user(chosen_user[0], user_id)
+                print("followed")
         if choice2 == "3":
-            title = input("What is the name of your list?")
+            title = input("What is the name of your list? ")
             list1 = List("", title, user_id)
+            print("list added")
         if choice2 == "4":
-            pass
+            print("\nFilms that you've reviewed: ")
+            user_reviews = get_user_reviews(user_id)
+            print("\nLists that you've made: ")
+            user_lists = display_lists(user_id)
+            print("\nYour replies to reviews: ")
+            r_replies = user_review_replies(user_id)
+            print("\nYour replies to lists: ")
+            l_replies = user_list_replies(user_id)
+            print("\nUsers that you follow: ")
+            following = see_following(user_id)
+            print("\nYour followers: ")
+            see_followers(user_id)
+            print("\nYou have four options: ")
+            print("   1: Edit/delete a review")
+            print("   2: Edit/delete a list")
+            print("   3: Edit/delete a review reply")
+            print("   4: Edit/delete a list reply")
+            print("   5: Check up on a followed user")
+            print("   6: Unfollow a user")
+            choice5 = input("What will it be? ")
+            if choice5 == "1":
+                choice6 = input("Which review would you like to edit/delete? ")
+                for review in user_reviews:
+                    if review[0] == choice6:
+                        review1 = Review(review[1], review[2], review[3], user_id, review[5])
+                        print("You rated " + review[4] + " " + review[2] + "/10 and said: " + review[3])
+                        print("You have 4 options: ")
+                        print("   1: Change the rating")
+                        print("   2: Change the review")
+                        print("   3: Delete the review")
+                        print("   4: Go back")
+                        choice7 = input("What will it be? ")
+                        if choice7 == "1":
+                            new_rating = input("On a scale of 1-10, what do you want to change the rating to? ")
+                            review1.set_rating(new_rating)
+                        if choice7 == "2":
+                            new_review = input("What do you want to say this time? ")
+                            review1.set_body(new_review)
+                        if choice7 == "3":
+                            review1.delete()
+                            print("The review has been deleted")
+                        if choice7 == "4":
+                            pass
+            if choice5 == "2":
+                pass
+            if choice5 == "3":
+                pass
+            if choice5 == "4":
+                pass
+            if choice5 == "5":
+                pass
+            if choice5 == "6":
+                pass
         check5 = input("Would you like to go back home? (y/n) ")

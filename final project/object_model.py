@@ -1266,7 +1266,7 @@ class Review:
             connection = mysql.connector.connect(**config)
 
             cursor = connection.cursor(prepared=True)
-            query = 'UPDATE reviews SET review_body = %s WHERE review_id = %s;'
+            query = 'UPDATE reviews SET review = %s WHERE review_id = %s;'
 
             data_tuple = (self.__body, self.__review_id)
             cursor = connection.cursor()
@@ -1361,7 +1361,7 @@ class Review_Reply:
             self.__reply_id = str(uuid.uuid4())
             try:
                 connection = mysql.connector.connect(**config)
-                query = """INSERT INTO review_replies (reply_id, reply_text, fk_user_id, fk_review_id
+                query = """INSERT INTO review_replies (reply_id, reply_text, fk_user_id, fk_review_id)
                            VALUES (%s, %s, %s, %s) """
 
                 values = [(self.__reply_id, self.__reply, self.__user_id, self.__review_id)]
@@ -1597,7 +1597,7 @@ class List_Reply:
             self.__reply_id = str(uuid.uuid4())
             try:
                 connection = mysql.connector.connect(**config)
-                query = """INSERT INTO list_replies (reply_id, reply_text, fk_user_id, fk_list_id
+                query = """INSERT INTO list_replies (reply_id, reply_text, fk_user_id, fk_list_id)
                            VALUES (%s, %s, %s, %s) """
 
                 values = [(self.__reply_id, self.__reply, self.__user_id, self.__list_id)]
