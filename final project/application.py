@@ -683,7 +683,7 @@ def see_following(f_id):
     try:
         connection = mysql.connector.connect(**config)
         cursor = connection.cursor()
-        query = "select users.username, user_followers.fk_follower_id from users inner join user_followers on users.user_id=user_followers.fk_user_id where user_followers.fk_follower_id = '" + f_id + "';"
+        query = "select users.username, user_followers.fk_user_id from users inner join user_followers on users.user_id=user_followers.fk_user_id where user_followers.fk_follower_id = '" + f_id + "';"
         cursor.execute(query)
         result = cursor.fetchall()
         following = []
@@ -1307,7 +1307,48 @@ else:
                         if choice7 == "3":
                             pass
             if choice5 == "5":
-                pass
+                choice5 = input("Which user would you like to select? ")
+                for j in following:
+                    if choice5 == j[0]:
+                        chosen_user_id = j[1]
+                chosen_user = get_username(chosen_user_id)
+                print(chosen_user[1] + "'s lists: ")
+                user_lists = display_lists(chosen_user[0])
+                print("films that " + chosen_user[1] + " has reviewed: ")
+                user_reviews = get_user_reviews(chosen_user[0])
+                print("You have three options")
+                print("   1: See a list")
+                print("   2: Read a review")
+                print("   3: Go back")
+                choice5 = input("Which will it be? ")
+                if choice5 == "1":
+                    choice6 = input("which list would you like to see? ")
+                    for x in user_lists:
+                        if x[0] == choice6:
+                            print(x[2] + ": ")
+                            display_list(x[1])
+                            print("     Replies to " + x[2] + ": ")
+                            read_list_replies(x[1])
+                            break
+                    choice6 = input("Would you like to reply to this list? (y/n) ")
+                    if choice6 == "y":
+                        reply_to_list(user_id, x[1])
+                if choice5 == "2":
+                    choice6 = input("which review would you like to read? ")
+                    for x in user_reviews:
+                        if x[0] == choice6:
+                            display_review(x[1])
+                            print("     Replies: ")
+                            read_review_replies(x[1])
+                            break
+                    choice6 = input("Would you like to reply to this review? (y/n) ")
+                    if choice6 == "y":
+                        reply_to_review(user_id, x[1])
+                if choice5 == "3":
+                    pass
             if choice5 == "6":
-                pass
+                choice6 = input("who would you like to unfollow? ")
+                for x in following:
+                    if x[0] == choice6:
+                        unfollow_user(x[1], user_id)
         check5 = input("Would you like to go back home? (y/n) ")
