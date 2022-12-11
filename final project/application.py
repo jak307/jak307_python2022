@@ -456,7 +456,7 @@ def display_list(l_id):
             result = cursor.fetchall()
             for film in result:
                 print(counter1 + ": " + film[1])
-                results1.append((counter1, x[0]))
+                results1.append((counter1, film[0]))
             counter = counter + 1
         return results1
 
@@ -530,7 +530,6 @@ def delete_list_entry(l_id, f_id):
                 cursor.execute(query, data_tuple)
                 connection.commit()
             if entry[1] == f_id:
-                print("got here")
                 check = 1
         cursor = connection.cursor()
         query = "delete from list_films where fk_list_id = '" + l_id + "' and fk_film_id = '" + f_id + "';"
