@@ -456,7 +456,7 @@ def display_list(l_id):
             result = cursor.fetchall()
             for film in result:
                 print(counter1 + ": " + film[1])
-                results1.append((counter1, film[0]))
+                results1.append((counter1, film[0], film[1]))
             counter = counter + 1
         return results1
 
@@ -1306,12 +1306,16 @@ else:
                     if choice6 == i[0]:
                         the_list = display_list(i[1])
                         break
-                choice6 = input("Which entry would you like to remove?")
-                for x in the_list:
-                    if choice6 == x[0]:
-                        delete_list_entry(i[1], x[1])
-                        break
-                
+                choice6 = input("Remove entry(1) or remove list(2)? ")
+                if choice6 == "1":
+                    choice7 = input("Which entry would you like to remove?")
+                    for x in the_list:
+                        if choice7 == x[0]:
+                            delete_list_entry(i[1], x[1])
+                            break
+                if choice6 == "2":
+                    list1 = List(i[1], i[2])
+                    list1.delete()
             if choice5 == "3":
                 choice6 = input("Which review reply would you like to edit/delete? ")
                 for reply in r_replies:
