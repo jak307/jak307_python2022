@@ -447,6 +447,7 @@ def display_list(l_id):
         cursor.execute(query)
         results = cursor.fetchall()
         counter = 1
+        results1 = []
         for x in results:
             counter1 = str(counter)
             cursor = connection.cursor()
@@ -455,7 +456,9 @@ def display_list(l_id):
             result = cursor.fetchall()
             for film in result:
                 print(counter1 + ": " + film[1])
+                results1.append((counter1, x[0]))
             counter = counter + 1
+        return results1
 
     except mysql.connector.Error as error:
         print("Failed to read from MySQL {}".format(error))
@@ -500,7 +503,39 @@ def append_list(l_id, f_id):
         cursor.executemany(query, values)
         connection.commit()
         print("\nnew list:")
-        display_list(l_id)
+        the_list = display_list(l_id)
+    except mysql.connector.Error as error:
+        print("Failed to read from MySQL {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close
+
+
+
+def delete_list_entry(l_id, f_id):
+    try:
+        connection = mysql.connector.connect(**config)
+        cursor = connection.cursor()
+        query = "select * from list_films where fk_list_id = '" + l_id + "' order by list_rank;"
+        cursor.execute(query)
+        results = cursor.fetchall()
+        check = 0
+        for entry in results:
+            if check == 1:
+                cursor = connection.cursor(prepared=True)
+                query = 'UPDATE list_films SET list_rank = %s WHERE fk_list_id = %s;'
+                data_tuple = (entry[2] - 1, entry[0])
+                cursor = connection.cursor()
+                cursor.execute(query, data_tuple)
+                connection.commit()
+            if entry[1] == f_id:
+                print("got here")
+                check = 1
+        cursor = connection.cursor()
+        query = "delete from list_films where fk_list_id = '" + l_id + "' and fk_film_id = '" + f_id + "';"
+        cursor.execute(query)
+        connection.commit()
     except mysql.connector.Error as error:
         print("Failed to read from MySQL {}".format(error))
     finally:
@@ -1174,7 +1209,7 @@ else:
                 choice5 = input("Which list would you like to add this film to? ")
                 for i in tuple_list:
                     if choice5 == i[0]:
-                        display_list(i[1])
+                        the_list = display_list(i[1])
                         append_list(i[1], film_id)
         if choice2 == "2":
             results = display_users(user_id)
@@ -1197,7 +1232,7 @@ else:
                 for x in user_lists:
                     if x[0] == choice6:
                         print(x[2] + ": ")
-                        display_list(x[1])
+                        the_list = display_list(x[1])
                         print("     Replies to " + x[2] + ": ")
                         read_list_replies(x[1])
                         break
@@ -1267,7 +1302,17 @@ else:
                         if choice7 == "4":
                             pass
             if choice5 == "2":
-                pass
+                choice6 = input("Which list would you like to edit/delete? ")
+                for i in user_lists:
+                    if choice6 == i[0]:
+                        the_list = display_list(i[1])
+                        break
+                choice6 = input("Which entry would you like to remove?")
+                for x in the_list:
+                    if choice6 == x[0]:
+                        delete_list_entry(i[1], x[1])
+                        break
+                
             if choice5 == "3":
                 choice6 = input("Which review reply would you like to edit/delete? ")
                 for reply in r_replies:
@@ -1326,7 +1371,7 @@ else:
                     for x in user_lists:
                         if x[0] == choice6:
                             print(x[2] + ": ")
-                            display_list(x[1])
+                            the_list = display_list(x[1])
                             print("     Replies to " + x[2] + ": ")
                             read_list_replies(x[1])
                             break
